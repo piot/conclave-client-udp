@@ -1,0 +1,12 @@
+depsversion = "0.0.0"
+
+name = "piot/conclave-client-udp-c"
+version = "0.0.0"
+
+[[dependencies]]
+name = "piot/conclave-client-c"
+version = "0.0.0"
+
+[[dependencies]]
+name = 'piot/udp-client-c'
+version = "*"
