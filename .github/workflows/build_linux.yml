@@ -39,4 +39,4 @@ jobs:
         with:
           name: Conclave Client UDP Linux Library
           path: |
-            src/lib/libconclave-client.a
+            src/lib/libconclave-client-udp.a

@@ -7,14 +7,14 @@
 
 static int udpClientSocketInfoSend(void* _self, const uint8_t* data, size_t size)
 {
-    UdpClientSocketInfo* self = (UdpClientSocketInfo*)_self;
+    ClvUdpClientSocketInfo* self = (ClvUdpClientSocketInfo*)_self;
 
     return udpClientSend(self->clientSocket, data, size);
 }
 
 static ssize_t udpClientSocketInfoReceive(void* _self, uint8_t* data, size_t size)
 {
-    UdpClientSocketInfo* self = (UdpClientSocketInfo*)_self;
+    ClvUdpClientSocketInfo* self = (ClvUdpClientSocketInfo*)_self;
 
     return udpClientReceive(self->clientSocket, data, size);
 }
@@ -27,7 +27,7 @@ static ssize_t udpClientSocketInfoReceive(void* _self, uint8_t* data, size_t siz
 /// @param guiseUserSessionId guiseUserSessionId
 /// @return negative on error,
 int clvClientUdpInit(ClvClientUdp* self, struct ImprintAllocator* memory, const char* name,
-    uint16_t port, GuiseSerializeUserSessionId guiseUserSessionId)
+    uint16_t port, const GuiseSerializeUserSessionId guiseUserSessionId)
 {
     self->transport.receive = udpClientSocketInfoReceive;
     self->transport.send = udpClientSocketInfoSend;
@@ -41,11 +41,13 @@ int clvClientUdpInit(ClvClientUdp* self, struct ImprintAllocator* memory, const 
     conclaveClientLog.config = &g_clog;
     conclaveClientLog.constantPrefix = "conclaveClient";
 
-    clvClientInit(
-        &self->conclaveClient, memory, &self->transport, guiseUserSessionId, conclaveClientLog);
+    ClvClientRealizeSettings settings;
+    settings.transport = self->transport;
+    settings.guiseUserSessionId = guiseUserSessionId;
+    settings.memory = memory;
+    settings.log = conclaveClientLog;
     //conclaveClientReInit(&self->conclaveClient, &self->transport, secret->userId, secret->passwordHash);
-
-    return 0;
+    return clvClientRealizeInit(&self->conclaveClient, &settings);
 }
 
 /// Updates the client
@@ -54,5 +56,11 @@ int clvClientUdpInit(ClvClientUdp* self, struct ImprintAllocator* memory, const 
 /// @return negative on error
 int clvClientUdpUpdate(ClvClientUdp* self, MonotonicTimeMs now)
 {
-    return clvClientUpdate(&self->conclaveClient, now);
+    return clvClientRealizeUpdate(&self->conclaveClient, now);
+}
+
+int clvClientUdpCreateRoom(ClvClientUdp* self, const ClvSerializeRoomCreateOptions* roomOptions)
+{
+    clvClientRealizeCreateRoom(&self->conclaveClient, roomOptions);
+    return 0;
 }
