@@ -21,11 +21,12 @@ typedef struct ClvClientUdp {
     DatagramTransport transport;
     ClvUdpClientSocketInfo socketInfo;
     UdpClientSocket socket;
+    char subLog[32];
     Clog log;
 } ClvClientUdp;
 
-int clvClientUdpInit(ClvClientUdp* self, struct ImprintAllocator* memory, const char* name,
-    uint16_t port, GuiseSerializeUserSessionId guiseUserSessionId);
+int clvClientUdpInit(ClvClientUdp* self,  const char* name,
+    uint16_t port, GuiseSerializeUserSessionId guiseUserSessionId, Clog log);
 
 int clvClientUdpUpdate(ClvClientUdp* self, MonotonicTimeMs now);
 int clvClientUdpCreateRoom(ClvClientUdp* self, const struct ClvSerializeRoomCreateOptions* roomOptions);

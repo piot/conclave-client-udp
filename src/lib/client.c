@@ -21,13 +21,12 @@ static ssize_t udpClientSocketInfoReceive(void* _self, uint8_t* data, size_t siz
 
 /// Initialize a conclave client with udp client transport
 /// @param self client
-/// @param memory memory to use for allocating guise client
 /// @param name host name to connect to
 /// @param port port number to connect to (usually 27004)
 /// @param guiseUserSessionId guiseUserSessionId
 /// @return negative on error,
-int clvClientUdpInit(ClvClientUdp* self, struct ImprintAllocator* memory, const char* name,
-    uint16_t port, const GuiseSerializeUserSessionId guiseUserSessionId)
+int clvClientUdpInit(ClvClientUdp* self, const char* name, uint16_t port,
+    const GuiseSerializeUserSessionId guiseUserSessionId, Clog log)
 {
     self->transport.receive = udpClientSocketInfoReceive;
     self->transport.send = udpClientSocketInfoSend;
@@ -37,14 +36,14 @@ int clvClientUdpInit(ClvClientUdp* self, struct ImprintAllocator* memory, const 
 
     self->socketInfo.clientSocket = &self->socket;
 
+    tc_snprintf(self->subLog, 32, "%s/realize", log.constantPrefix);
     Clog conclaveClientLog;
-    conclaveClientLog.config = &g_clog;
-    conclaveClientLog.constantPrefix = "conclaveClient";
+    conclaveClientLog.config = log.config;
+    conclaveClientLog.constantPrefix = self->subLog;
 
     ClvClientRealizeSettings settings;
     settings.transport = self->transport;
     settings.guiseUserSessionId = guiseUserSessionId;
-    settings.memory = memory;
     settings.log = conclaveClientLog;
     //conclaveClientReInit(&self->conclaveClient, &self->transport, secret->userId, secret->passwordHash);
     return clvClientRealizeInit(&self->conclaveClient, &settings);
