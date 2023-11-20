@@ -26,7 +26,7 @@ static ssize_t udpClientSocketInfoReceive(void* _self, uint8_t* data, size_t siz
 /// @param guiseUserSessionId guiseUserSessionId
 /// @return negative on error,
 int clvClientUdpInit(ClvClientUdp* self, const char* name, uint16_t port,
-    const GuiseSerializeUserSessionId guiseUserSessionId, Clog log)
+    const GuiseSerializeUserSessionId guiseUserSessionId, MonotonicTimeMs now, Clog log)
 {
     self->transport.receive = udpClientSocketInfoReceive;
     self->transport.send = udpClientSocketInfoSend;
@@ -36,17 +36,13 @@ int clvClientUdpInit(ClvClientUdp* self, const char* name, uint16_t port,
 
     self->socketInfo.clientSocket = &self->socket;
 
-    tc_snprintf(self->subLog, 32, "%s/realize", log.constantPrefix);
+    tc_snprintf(self->subLog, 32, "%s/conclave", log.constantPrefix);
     Clog conclaveClientLog;
     conclaveClientLog.config = log.config;
     conclaveClientLog.constantPrefix = self->subLog;
 
-    ClvClientRealizeSettings settings;
-    settings.transport = self->transport;
-    settings.guiseUserSessionId = guiseUserSessionId;
-    settings.log = conclaveClientLog;
     //conclaveClientReInit(&self->conclaveClient, &self->transport, secret->userId, secret->passwordHash);
-    return clvClientRealizeInit(&self->conclaveClient, &settings);
+    return clvClientInit(&self->conclaveClient, &self->transport, guiseUserSessionId, now, conclaveClientLog);
 }
 
 /// Updates the client
@@ -55,11 +51,11 @@ int clvClientUdpInit(ClvClientUdp* self, const char* name, uint16_t port,
 /// @return negative on error
 int clvClientUdpUpdate(ClvClientUdp* self, MonotonicTimeMs now)
 {
-    return clvClientRealizeUpdate(&self->conclaveClient, now);
+    return clvClientUpdate(&self->conclaveClient, now);
 }
 
 int clvClientUdpCreateRoom(ClvClientUdp* self, const ClvSerializeRoomCreateOptions* roomOptions)
 {
-    clvClientRealizeCreateRoom(&self->conclaveClient, roomOptions);
+    clvClientCreateRoom(&self->conclaveClient, roomOptions);
     return 0;
 }

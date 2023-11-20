@@ -6,7 +6,7 @@
 #define CONCLAVE_CLIENT_UDP_H
 
 #include <clog/clog.h>
-#include <conclave-client/network_realizer.h>
+#include <conclave-client/client.h>
 #include <datagram-transport/transport.h>
 #include <udp-client/udp_client.h>
 
@@ -17,7 +17,7 @@ typedef struct ClvUdpClientSocketInfo {
 } ClvUdpClientSocketInfo;
 
 typedef struct ClvClientUdp {
-    ClvClientRealize conclaveClient;
+    ClvClient conclaveClient;
     DatagramTransport transport;
     ClvUdpClientSocketInfo socketInfo;
     UdpClientSocket socket;
@@ -25,10 +25,11 @@ typedef struct ClvClientUdp {
     Clog log;
 } ClvClientUdp;
 
-int clvClientUdpInit(ClvClientUdp* self,  const char* name,
-    uint16_t port, GuiseSerializeUserSessionId guiseUserSessionId, Clog log);
+int clvClientUdpInit(ClvClientUdp* self, const char* name, uint16_t port,
+    GuiseSerializeUserSessionId guiseUserSessionId, MonotonicTimeMs now, Clog log);
 
 int clvClientUdpUpdate(ClvClientUdp* self, MonotonicTimeMs now);
-int clvClientUdpCreateRoom(ClvClientUdp* self, const struct ClvSerializeRoomCreateOptions* roomOptions);
+int clvClientUdpCreateRoom(
+    ClvClientUdp* self, const struct ClvSerializeRoomCreateOptions* roomOptions);
 
 #endif
