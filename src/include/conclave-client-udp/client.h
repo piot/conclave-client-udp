@@ -11,6 +11,7 @@
 #include <udp-client/udp_client.h>
 
 struct ClvSerializeRoomCreateOptions;
+struct ImprintAllocatorWithFree;
 
 typedef struct ClvUdpClientSocketInfo {
     struct UdpClientSocket* clientSocket;
@@ -26,7 +27,8 @@ typedef struct ClvClientUdp {
 } ClvClientUdp;
 
 int clvClientUdpInit(ClvClientUdp* self, const char* name, uint16_t port,
-    GuiseSerializeUserSessionId guiseUserSessionId, MonotonicTimeMs now, Clog log);
+    GuiseSerializeUserSessionId guiseUserSessionId, MonotonicTimeMs now,
+    struct ImprintAllocatorWithFree* allocator, Clog log);
 
 int clvClientUdpUpdate(ClvClientUdp* self, MonotonicTimeMs now);
 int clvClientUdpCreateRoom(

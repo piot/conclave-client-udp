@@ -26,7 +26,8 @@ static ssize_t udpClientSocketInfoReceive(void* _self, uint8_t* data, size_t siz
 /// @param guiseUserSessionId guiseUserSessionId
 /// @return negative on error,
 int clvClientUdpInit(ClvClientUdp* self, const char* name, uint16_t port,
-    const GuiseSerializeUserSessionId guiseUserSessionId, MonotonicTimeMs now, Clog log)
+    const GuiseSerializeUserSessionId guiseUserSessionId, MonotonicTimeMs now,
+    struct ImprintAllocatorWithFree* allocator, Clog log)
 {
     self->transport.receive = udpClientSocketInfoReceive;
     self->transport.send = udpClientSocketInfoSend;
@@ -42,7 +43,8 @@ int clvClientUdpInit(ClvClientUdp* self, const char* name, uint16_t port,
     conclaveClientLog.constantPrefix = self->subLog;
 
     //conclaveClientReInit(&self->conclaveClient, &self->transport, secret->userId, secret->passwordHash);
-    return clvClientInit(&self->conclaveClient, &self->transport, guiseUserSessionId, now, conclaveClientLog);
+    return clvClientInit(&self->conclaveClient, &self->transport, guiseUserSessionId, now,
+        allocator, conclaveClientLog);
 }
 
 /// Updates the client
